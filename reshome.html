@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Restaurant Assign</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/5c08699f58.js" crossorigin="anonymous"></script>
+  <script>
+      var foodList=[];
+      var categoryList=[];
+    if (typeof(Storage) !== "undefined") {
+
+		if(localStorage.getItem("food_Lists")!=undefined){
+			var food_string=localStorage.getItem("food_Lists");
+			foodList=JSON.parse(food_string);
+        }
+        if(localStorage.getItem("category_List")!=undefined){
+            categoryList=JSON.parse(localStorage.getItem("category_List"));
+        }
+	} 
+
+    function showCategory(){
+        alert('Category length' +categoryList.length);
+		if(categoryList.length>0){
+				$("#catlist").empty();
+				
+				categoryList.forEach(function(cate, i){
+					$("#catlist").append('<li>'
+                        +'<a onclick="chooseCategory('+i+')"'+
+                        'class="list-group-item list-group-item-action font-weight-bold bg-dark text-white">'
+                        +'&#8594'+cate.name+'</a>'
+                        +'</li>');
+				});
+			}
+    }
+
+    function chooseCategory(ci){
+        var currentCat= categoryList[ci];
+        alert('Choose Category is '+currentCat.name);
+        var selectedFood=foodList.filter(function(item,i){
+            return item.category==currentCat.name;
+        });
+        alert('selected food '+selectedFood.length);
+        showFoodByCategory(selectedFood);
+    }
+    function showFoodByCategory(s){
+        $("#foodList").empty();
+            if(s.length>0){
+                s.forEach(function(p,i){
+                    $("#foodList").append(
+                        '<div class="card mb-3 mx-auto" style="max-width: 440px;">'+
+                            '<div class="row no-gutters">'+
+                                '<div class="col-md-6">'+
+                                '<img src="milkshake.jpg" class="card-img mt-2" alt="pizza">'+
+                                '</div><div class="col-md-6">'+
+                                '<div class="card-body">'+
+                                '<h5 class="name card-title">'+p.name+'</h5>'+
+                                '<h6 class="card-text">Price :<span class="price">'+p.price+'</span></h6>'+
+                                '<button onclick="orderFood('+i+')" class="btn btn-danger text-white float-right'+
+                                 'float-bottom">&plus;&nbsp;ORDER</button>'+
+                                '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'
+                    );
+                });
+            }
+    }
+
+    function showFood()
+    {
+       // var food_string=localStorage.getItem("food_Lists");
+        //foodList=JSON.parse(food_string);
+        $("#foodlist").empty();
+        var len=foodList.length;
+        alert(len);
+        
+        console.log(foodList);
+        if(len>0){
+            foodList.forEach(function(p,i){
+                    console.log(p.name);
+            
+                    $("#foodList").append(
+                        '<div class="card mb-3 mx-auto" style="max-width: 440px;">'+
+                            '<div class="row no-gutters">'+
+                                '<div class="col-md-6">'+
+                                '<img src="pizza.jpg" class="card-img mt-1 mb-2" alt="pizza">'+
+                                '</div><div class="col-md-6">'+
+                                '<div class="card-body">'+
+                                '<h5 class="name card-title">'+p.name+'</h5>'+
+                               '<h6 class="card-text">Price :<span class="price">'+p.price+'</span></h6>'+
+                                '<button onclick="orderFood('+i+')" class="btn btn-danger text-white float-right float-bottom">'+
+                                '&plus;&nbsp;ORDER</button>'+
+                                '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'
+                    );
+            });          
+        }
+    }            
+   
+    var total=0;
+    var n=0;
+	function orderFood(i){
+        n++;
+		$("#tbod").append(
+            '<tr>'
+            +'<td>'+foodList[i].name+'</td>'
+            +'<td>'+foodList[i].price+'</td>'
+            +'<td><a id="dbtn"class="btn btn-success" onclick="deleteOrder('+i+',this)">Delete</a></td>'
+            +'</tr>' );
+        
+        var pv=parseInt(foodList[i].price);
+        total+=pv;
+        alert(total);
+        $("#foot").text(total.toFixed(0));
+
+	}
+
+    function deleteOrder(a,t){
+        alert(foodList[a].price);
+        $(t).parent().parent().remove();
+        total-=foodList[a].price;
+        $("#foot").text(total.toFixed(0));
+    }
+
+    function editOrder(v){
+        var curo=categoryList[v];
+        alert('selected team is '+curcat.name);
+    }    
+
+    $(document).ready(function(){
+        showFood();
+        showCategory();
+	});
+  </script>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        table,h2{
+        margin-top: 45px;
+        }
+        
+        .cads{
+            margin:5px !important;
+        }
+
+        .price{
+            color:gold;
+            margin-left:20px;
+            font-size:18px;
+        }
+        #cc{
+            width:50%;
+            height:50px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md bg-dark">
+        <a class="navbar-brand" href="reshome.html"><i class="fa fa-home text-white" style="font-size:30px;"></i></a> 
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="addcategory.html" style="font-size:20px;">Manage Category</a>
+            </li>
+            <li>
+                <a class="nav-link" href="additem.html" style="font-size:20px;">Manage Food</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container-fluid bg-white">
+        <div class="row mt-2 bg-white">
+            <div class="col-3 bg-dark">
+                <div class="rounded-sm w-30 h-30">
+                    <h1 class="mt-4 bg-dark text-white">OUR MENU
+                        <img src="res-logo.jpg" class="rounded " alt="Restaurant Logo"></h1>
+                </div>  
+                <ul class="list-group list-group-flush mt-4" id="catlist">
+                
+                </ul>
+            </div>
+            
+            <div class="col-4 p-2 bg-dark">
+                <h2 class="text-white mb-4" style="text-align:center;">ENTREES</h2>
+                <div id="foodList" >
+                    
+                </div>
+            </div> 
+
+            <div class="col-5 bg-dark">
+                <table class="table table-borderless">
+                    <thead class="thead-light">
+                        <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbod" class="text-white">
+                        
+                    </tbody>
+                    <tfoot class="text-dark">
+                        <tr class="table-light">
+                        <td colspan="2" style="text-align: center;">Total</td>
+                        <td><i id="foot" class="fa fa-dollar"></i></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>        
+    </div>
+
+</body>
+</html>

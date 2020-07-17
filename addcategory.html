@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add new category</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://kit.fontawesome.com/5c08699f58.js" crossorigin="anonymous"></script>
+        <script>
+
+            var foodList=[];
+            var categoryList=[];
+            if (typeof(Storage) !== "undefined") {
+
+                if(localStorage.getItem("category_List")!=undefined){
+                    categoryList=JSON.parse(localStorage.getItem("category_List"));
+                }
+                if(localStorage.getItem("food_Lists")!=null){
+                    var food_string=localStorage.getItem("food_Lists");
+                    foodList=JSON.parse(food_string);
+                }
+            }
+
+            function addCategory(){
+                if($("#name").val()!=""){
+                    var n=$("#name").val();
+                    var fdate= $("#date").val();
+                    var des= $("#des").val();
+                    var c={name:n,addeddate:fdate,description:des};
+                    //console.log('before :'+JSON.stringify(c));
+                    categoryList.push(c);
+                    localStorage.setItem("category_List",JSON.stringify(categoryList));
+                    showCatList();
+                    clearData();
+                }else{
+                    alert('Please fill complete information');
+                }
+            }
+
+            function showCatList(){
+                $("#clist tbody").empty();
+                if(categoryList.length>0){
+                    var n=0;
+                    categoryList.forEach(function(c, i){
+                        n++;
+                        $("#clist tbody").append(
+                            '<tr>'
+                                +'<td>'+n+'</td>'
+                                +'<td>'+c.name+'</td>'
+                                +'<td>'+c.addeddate+'</td>'
+                                +'<td>'+c.description+'</td>'
+                                +'<td><a onclick="editCat('+i+')" class="btn btn-info" id="link'+i+'">Edit</a>&nbsp;&nbsp;'
+                                +'<a onclick="updateCat('+i+')" class="btn btn-info" id="upd'+i+'"'+'style="display:none;">Update</a>&nbsp;&nbsp;'
+                                +'<a onclick="deleteCat('+i+')" class="btn btn-success">Delete</a></td>'
+                            +'</tr>'
+                        );
+                    });
+                }
+            }
+
+            function clearData(){
+                $("#name").val("");
+                $("#date").val("");
+                $("#des").val("");
+            }
+
+            var editarr=[];
+            function editCat(i){
+                var curf=categoryList[i];
+                alert('selected team is '+curf.name);
+                    
+                    if(i>-1){
+                        $("#link"+i).css("display","none");
+                        $("#upd"+i).css("display","inline-block");
+                        editarr =JSON.parse(localStorage.getItem('category_List'));
+                        var curf=editarr[i];
+                        var name=curf.name;
+                        var datev=curf.addeddate;
+                        var desc=curf.description;
+
+                        $("#name").val(name);
+                        $("#date").val(datev);
+                        $("#des").val(desc);
+                    }
+            }
+
+            function updateCat(f){
+                $("#upd"+f).css("display","none");
+                $("#link"+f).css("display","inline-block");
+                var n=$("#name").val();
+                var e=$("#date").val();
+                var d=$("#des").val();  
+                var v={name: n, addeddate:e,description:d};
+                categoryList.splice(f,1,v);
+                localStorage.setItem('category_List',JSON.stringify(categoryList));
+                alert("success");
+                clearData();
+                
+                showCatList();
+
+            }
+
+            function deleteCat(v){
+               // var curcat=categoryList[v];
+               // alert('selected category is '+curcat.name);
+               deleteFood(v);
+                if(v>-1){
+                        categoryList.splice(v,1);
+                        localStorage.setItem('category_List',JSON.stringify(categoryList));
+                        console.log(categoryList);
+                        alert("Successful Deleted!");
+                        showCatList();
+                        
+                }
+            }
+
+            function deleteFood(n){
+                var newarr=[];
+                var catname=categoryList[n].name;
+                console.log(foodList);
+                for(var i=0;i<foodList.length;i++){
+                    var c=foodList[i].category;
+                    if(c!=catname){
+                        newarr.push(foodList[i]);
+                    }
+                }
+                console.log(newarr);
+                localStorage.removeItem('food_Lists');
+                localStorage.setItem('food_Lists',JSON.stringify(newarr));
+
+            }
+
+            $(document).ready(function(){
+                showCatList();
+	        });
+
+
+        </script>
+        <style>
+            h2{
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-dark">
+            <a class="navbar-brand" href="reshome.html"><i class="fa fa-home text-white" style="font-size:30px;"></i></a> 
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="addcategory.html" style="font-size:20px;">Manage Category</a>
+                </li>
+                <li>
+                    <a class="nav-link text-white" href="additem.html" style="font-size:20px;">Manage Food</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="container-fluid">
+            <h2 class="text-dark">Add Category</h2>
+	
+                <div class="col-12 bg-dark text-white">
+                    <div class="form-group">
+                            <label for="name">Category Name : </label>
+                            <input type="text" class="form-control col-12" id="name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Added Date : </label>
+                            <input type="date" class="form-control col-12" id="date" />
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Description : </label>
+                            <input type="text" class="form-control " id="des" />
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary col-2 mb-2" onclick="addCategory();"> Add</button>
+                        </div>
+
+                </div>
+                <div class="col-12 ">
+                    <table class="table table-dark" id="clist">
+                        <thead class="text-white">
+                            <tr>
+                                <th>No</th>
+                                <th> Name</th>
+                                <th>Added Date</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+                        <tbody class="text-white">
+
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>     
+        </div>
+    </body>
+</html>

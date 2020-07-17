@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add new item</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://kit.fontawesome.com/5c08699f58.js" crossorigin="anonymous"></script>
+        <script>
+            var foodList=[];
+            var categoryList=[];
+            if (typeof(Storage) !== "undefined") {
+            
+                if(localStorage.getItem("food_Lists")!=null){
+                    var food_string=localStorage.getItem("food_Lists");
+                    foodList=JSON.parse(food_string);
+                }
+                if(localStorage.getItem("category_List")!=undefined){
+                    categoryList=JSON.parse(localStorage.getItem("category_List"));
+                }
+            }
+
+            function addFood(){
+                if($("#name").val()!="" && $("#price").val()!="" && $("#team").val()!=""){
+                    var n=$("#name").val();
+                    var p=$("#price").val();
+                    var c=$("#team").val();
+                    var f={name: n, price:p,category:c};
+                    console.log('before :'+JSON.stringify(f));
+                    foodList.push(f);
+                    localStorage.setItem('food_Lists',JSON.stringify(foodList));
+                    alert("success");
+                    showFood();
+                    clearData();
+                }else {
+                    alert('Please fill complete information');
+                }
+            }
+
+            function showCategory(){
+                if(categoryList.length>0){
+                    $("#team").empty();
+                    $("#team").append("<option> Select Team</option>");
+                    categoryList.forEach(function(c, i){
+                        $("#team").append("<option value='"+c.name+"'>"+c.name+"</option>");
+                    });
+                }
+		    }
+
+            function showFood(){
+                $("#food tbody").empty();
+                var n=0;
+                foodList.forEach(function(f,i){
+                    n++;
+                    $("#food tbody").append(
+                        '<tr>'
+                            +'<td>'+n+'</td>'
+                            +'<td id="d'+i+'">'+f.name+'</td>'
+                            +'<td id="e'+i+'">'+f.price+'</td>'
+                            +'<td id="s'+i+'">'+f.category+'</td>'
+                            +'<td><a onclick="editFood('+i+')" class="btn btn-info" id="link'+i+'">Edit</a>&nbsp;&nbsp;'
+                            +'<a onclick="updateFood('+i+')" class="btn btn-info" id="upd'+i+'" style="display:none;">Update</a>&nbsp;&nbsp;'
+                            +'<a onclick="deleteFood('+i+')" class="btn btn-success">Delete</a></td>'
+                        +'</tr>'
+                    );
+                });
+		    }
+
+            var editarr=[];
+            function editFood(i){
+                var curf=foodList[i];
+                alert('selected team is '+curf.name);
+                    
+                    if(i>-1){
+                        $("#link"+i).css("display","none");
+                        $("#upd"+i).css("display","inline-block");
+                        editarr =JSON.parse(localStorage.getItem('food_Lists'));
+                        var curf=editarr[i];
+                        var name=curf.name;
+                        var price=curf.price;
+                        var cat=curf.category;
+
+                        $("#name").val(name);
+                        $("#price").val(price);
+                        $("#team").val(cat);
+                    }
+            }
+            function updateFood(f){
+
+                $("#link"+f).css("display","inline-block");
+                $("#upd"+f).css("display","none");
+                var n=$("#name").val();
+                var p=$("#price").val();
+                var c=$("#team").val();  
+                var v={name: n, price:p,category:c};
+                foodList.splice(f,1,v);
+                localStorage.setItem('food_Lists',JSON.stringify(foodList));
+                alert("success");
+                showFood();
+                clearData();
+            }
+
+            function deleteFood(v){
+                $("#food tbody").empty();
+                    var curf=foodList[v];
+                    alert('selected team is '+curf.name);
+                    if(v>-1){
+                        foodList.splice(v,1);
+                        localStorage.setItem('food_Lists',JSON.stringify(foodList));
+                        alert("Successful Deleted!");
+                        showFood();
+                    }
+
+            }
+
+            function clearData(){
+                $("#name").val("");
+                $("#price").val("");
+                $("#team").val("");
+            }
+
+            $(document).ready(function(){
+                showFood();
+                showCategory();
+            });
+            
+        </script>
+        <style>
+            *{
+                box-sizing: border-box;
+            }
+        
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg bg-success">
+            <a class="navbar-brand" href="reshome.html"><i class="fa fa-home text-light" style="font-size:30px;"></i></a> 
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="addcategory.html" style="font-size:20px;">Manage Category</a>
+                </li>
+                <li>
+                    <a class="nav-link text-light" href="additem.html" style="font-size:20px;">Manage Food</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="container-fluid">
+            <h4>Add New Food Items</h4>
+            <div class="row bg-dark">
+                <div class="col-6 text-white">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Name : </label>
+                            <input type="text" class="form-control col-12" id="name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price : </label>
+                            <input type="text" class="form-control col-12" id="price" />
+                        </div>
+                        <div class="form-group">
+                            <label for="team">Category : </label>
+                            <select class="form-control col-12" id="team"></select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-info col-4" onclick="addFood();"> Add</button>
+                            <input type="hidden" id="mid" />
+                        </div>
+                    </form>
+                </div> 
+              
+                <div class="col-6">
+                    <table class="table" id="food">
+                        <thead class="text-white">
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+                        <tbody class="text-white">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>    
+        </div>
+    
+            
+    </div>
+          
+    </body>
+</html>
